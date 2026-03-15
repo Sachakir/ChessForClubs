@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tournaments</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+          rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/tournament_detail.css' %}">
+</head>
+<body>
+
+{% include "main/navbar.html" %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Pairings in round {{ round_number }}</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>White Player</th>
+                            <th>Black Player</th>
+                            <th>Result</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in games %}
+                            <tr>
+                                <td>{{ game.white_player }}</td>
+                                <td>{{ game.black_player }}</td>
+                                <td>{{ game.result }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

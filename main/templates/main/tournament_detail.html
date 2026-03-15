@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tournament.name }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+          rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/tournament_detail.css' %}">
+</head>
+
+<body>
+
+{% include "main/navbar.html" %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">{{ tournament.name }} - Tournament Overview</h1>
+        
+    <div class="card mb-3" >
+        {% if tournament.round_finished == 0 %}
+        <div class="card-header">
+            <h2 class="mb-3">Initial standings</h2>
+        </div>
+        {% else %}
+        <div class="card-header">
+            <h2 class="mb-3">Standings after round {{ tournament.round_finished }}</h2>
+        </div>
+        {% endif %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Keizer points</th>
+                    <th>Wins/total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in standings %}
+                    <tr>
+                        <td>{{ player.0 }}</td>
+                        <td>{{ player.1 }}</td>
+                        <td>{{ player.2 }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2">No players registered for this tournament.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if tournament.allow_inscriptions %}
+    <div class="card mt-4 mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Subscribe to Tournament</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_player">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <input type="text" name="player_name" id="player_name" class="form-control" 
+                               placeholder="Enter new player name">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="number" name="player_elo" id="player_elo" class="form-control" 
+                               placeholder="Enter ELO rating (beginner corresponds to 800 for example)" min="0", max="3000">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success mt-3">Subscribe</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if games %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2 class="mb-3">Current games in round {{ tournament.round_finished|add:1 }}</h2>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="register_results">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>White Player</th>
+                        <th>Black Player</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in games %}
+                        <tr>
+                            <td>{{ game.white_player }}</td>
+                            <td>{{ game.black_player }}</td>
+                            <td>
+                                <select name="game_{{ game.id }}_result" class="form-select form-select-sm">
+                                    <option value="" {% if game.result == "" %}selected{% endif %}>None</option>
+                                    <option value="1-0" {% if game.result == "1-0" %}selected{% endif %}>1-0</option>
+                                    <option value="1/2-1/2" {% if game.result == "1/2-1/2" %}selected{% endif %}>0.5-0.5</option>
+                                    <option value="0-1" {% if game.result == "0-1" %}selected{% endif %}>0-1</option>
+                                </select>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="text-center mt-4 mb-4">
+                <button type="submit" class="btn btn-primary mt-3">Register results</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+    {% if tournament.round_finished > 0 %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2 class="mb-3">Results of finished rounds</h2>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <!-- <th>Date</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in rounds_count %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'round_pairings' tournament.name r %}" class="btn btn-link">View round {{ r }} pairings</a><br>
+                        </td>
+                        <!-- <td> {{ tournament.round_date }}</td> -->
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+
+
+    {% endif %}
+
+    {% if is_admin %} 
+        <div class="card mt-4 mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Tournament Administration</h5>
+            </div>
+            {% if tournament.round_is_playing == False %}
+            <div class="card-body">
+                    <input type="hidden" name="action" value="start_round">
+                    <p>Current round: {{ tournament.round_finished }}</p>
+                    <a href="{% url 'make_pairings' tournament.name %}" class="btn btn-primary mt-3">Make pairings for next round</a>
+            </div>
+            {% else %}
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="end_round">
+                    <p>Current round: {{ tournament.round_finished|add:1 }}</p>
+                    <a href="{% url 'end_round' tournament.name %}" class="btn btn-primary mt-3">End round</a>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

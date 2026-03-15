@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ tournament.name }}</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+          rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/css/tournament_detail.css' %}">
+</head>
+
+<body>
+
+{% include "main/navbar.html" %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <h1 class="mb-4">About ChessForClubs</h1>
+
+            <p class="lead">
+                ChessForClubs is designed to help organize chess tournaments
+                using the <strong>Keizer pairing system</strong>.
+            </p>
+
+            <p>
+                The Keizer system is particularly well suited for club tournaments.
+                It allows players to participate flexibly without requiring them to
+                play every round. Pairings are generated just before each round,
+                making it easy to manage tournaments where attendance may vary.
+            </p>
+
+            <p>
+                If you would like to learn more about how the Keizer system works,
+                you can read:
+            </p>
+
+            <a class="btn btn-outline-primary"
+               href="https://jbfsoftware.com/wordpress/sevilla-keizer/"
+               target="_blank" rel="noopener">
+                Read about the Keizer System
+            </a>
+
+        </div>
+    </div>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
